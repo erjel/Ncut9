@@ -77,11 +77,16 @@ options.p = max(35,2*nbEigenValues); %voir
 options.p = min(options.p,n);
 
 %warning off
-%[vbar,s,convergence] = eigs2(@mex_w_times_x_symmetric,size(P,1),nbEigenValues,'LA',options,tril(P)); 
-[vbar,s,convergence] = eigs(@mex_w_times_x_symmetric,size(P,1),nbEigenValues,'LA',options,tril(P)); 
-%[vbar,s,convergence] = eigs_new(@mex_w_times_x_symmetric,size(P,1),nbEigenValues+1,'LA',options,tril(P)); % used by defaut
-
+% [vbar,s,convergence] = eigs(@mex_w_times_x_symmetric,size(P,1),nbEigenValues,'LA',options,tril(P));
+P=0.5*(P+P');
+[vbar,s,convergence] = eigs(P, nbEigenValues, ...
+    'largestreal', ...
+    'Display', 3, ...
+    'MaxIterations',  dataNcut.maxiterations, ...
+    'StartVector', ones(size(P,1),1) ...
+    );
 %warning on
+
 s = real(diag(s));
 [x,y] = sort(-s); 
 Eigenvalues = -x;
